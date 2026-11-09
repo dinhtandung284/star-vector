@@ -12,8 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 
-# Install Jupyter Notebook, clone and install star-vector and dependencies
-RUN pip install --upgrade pip && pip install jupyter deepspeed \
+# Install Jupyter Notebook, clone and install star-vector and dependencies.
+# flash_attn's setup.py imports torch, so it must be installed with
+# --no-build-isolation (pip's isolated build env has no torch). It needs
+# packaging/ninja/psutil present beforehand; setup.py first tries to download a
+# prebuilt wheel matching torch 2.5 / CUDA 12 / cp311, and only compiles if none fits.
+ENV MAX_JOBS=4
+RUN pip install --upgrade pip && pip install jupyter deepspeed packaging ninja psutil wheel \
+    && pip install --no-build-isolation flash_attn==2.7.3 \
     && git clone https://github.com/joanrod/star-vector.git /tmp/star-vector \
     && pip install /tmp/star-vector \
     && rm -rf /tmp/star-vector
