@@ -21,7 +21,20 @@ To simplify the setup process and avoid dependency issues, you can use a Docker 
 
 ---
 
-### 🚀 Run the Docker Container
+### 🚀 Run with Docker Compose (recommended)
+
+From the `docker/` folder:
+
+```bash
+echo "HF_TOKEN=<your_huggingface_token>" > .env   # once
+docker compose up --build
+```
+
+- The project root is mounted at `/workspace`; the notebook is in `/workspace/docker/`.
+- Models are cached in `docker/.huggingface/` (git-ignored), so they are downloaded only once.
+- Stop with `Ctrl+C` or `docker compose down`.
+
+### 🚀 Run the Docker Container (plain `docker run`)
 
 ```bash
 docker run -it \

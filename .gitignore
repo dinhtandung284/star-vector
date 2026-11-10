@@ -179,3 +179,7 @@ cython_debug/
 *internal*
 *test.png*
 assets/reward_assets
+assets/results
+
+# Docker: Hugging Face model cache (many GB)
+docker/.huggingface/

@@ -1,0 +1,32 @@
+name: starvector
+
+services:
+  starvector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: starvector:latest
+    container_name: starvector
+    ports:
+      - "8888:8888"
+    volumes:
+      # Project root -> /workspace (the notebook is at /workspace/docker/)
+      - ..:/workspace
+      # Hugging Face cache kept next to this file, so models are downloaded only once
+      - ./.huggingface:/root/.cache/huggingface
+    environment:
+      # Token for the gated bigcode/starcoderbase-1b model.
+      # Put HF_TOKEN=hf_xxx in docker/.env (same folder as this file) or export it in your shell.
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+    # PyTorch needs more shared memory than Docker's 64 MB default
+    shm_size: "8gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
